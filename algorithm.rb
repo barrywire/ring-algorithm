@@ -29,15 +29,19 @@ def ping_coordinator(pid_coordinator):
 end
 
 def send_message(pid, message):
-    # Send a message to the process with the given pid
-    # Print the message
+    # create an array to hold the pids
+    # add the pid to the array
     print message
+    pid_array = []
+    pid_array.append(pid)
+
+    return pid_array
 end
 
 def get_message(pid, message):
     # Get a message from the process with the given pid
     # Return the message
-    return message
+    return message, pid_array
 end
 
 def get_pid():
@@ -68,9 +72,8 @@ end
 
 # Actual Algorithm
 def ring_algo:
-    # Ping coordinator in intervals of 1 second
+    ping_coordinator(get_coordinator())
     if ping_coordinator() == true
-        # If the coordinator is alive, continue working
         continue_working()
     else
         # If the coordinator is dead, start the election
@@ -85,12 +88,28 @@ def ring_algo:
         end
     end
 
-    # Receive election message
-    # TODO: Start from here
+    # Receive messages
     message = get_message()
-    switch message
-        case "ELECTION"
 
+    case message
+    when "ELECTION"
+        # This means that the message has come back to the initiator
+        # Read the pid_array to see if there is a pid greater than the current pid
+        # If there is, send a COORDINATOR message to that pid calling it the new coordinator
+        # If there is not, send a COORDINATOR message to the current pid calling it the new coordinator
+        if pid_array > get_pid()
+            send_message(pid_array, "COORDINATOR")
+        else
+            send_message(get_pid(), "COORDINATOR")
+        end
+    when "COORDINATOR"
+        # This means the initiator is the new coordinator
+        # Send a message to the entire ring to inform them of the new coordinator
+        # Send a message also to inform them of the new ring members
+        # Continue working
+        send_message(pid_array, "COORDINATOR, #{get_pid()}")
+        send_message(pid_array, "NEW RING, #{pid_array}")
+        continue_working()
+    end
 
-    # Send coordinator message
 end
