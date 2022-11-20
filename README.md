@@ -4,5 +4,10 @@ An implementation of the Ring Algorithm using Ruby. The ring algorithm is one of
 
 ## Algorithm assumptions
 
-- This implementation assumes that the nodes are connected in a logical ring.
-- This implementation assumes that each process knows its successor.
+This implementation makes the following assumptions:
+
+1. The nodes are connected in a logical ring.
+2. Each process knows its successor.
+3. Initially, all the processes know the coordinator.
+4. The process id of the current process is 4.
+5. The process id of the successor is obtained by adding 1 to the current process id.
